@@ -1,0 +1,9 @@
+#!/usr/bin/python3
+
+import os, sys
+
+target_path = str(sys.argv[1])
+os.chdir(target_path)
+files = [name for name in os.listdir(target_path) if os.path.isfile(name)]
+for filename in files:
+	os.rename(filename, filename.replace(' ', '_'))
