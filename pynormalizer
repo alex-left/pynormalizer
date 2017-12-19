@@ -1,9 +1,55 @@
 #!/usr/bin/python3
 
-import os, sys
+import os, argparse
 
-target_path = str(sys.argv[1])
-os.chdir(target_path)
-files = [name for name in os.listdir(target_path) if os.path.isfile(name)]
-for filename in files:
-	os.rename(filename, filename.replace(' ', '_'))
+
+parser = argparse.ArgumentParser(description="Replace a space or another char in \
+directories and files by underscore or another char")
+parser.add_argument("target", type=str,
+                    help="file or directory to rename")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="print every file or directories renamed")
+parser.add_argument("-r", "--recursive", action="store_true",
+                    help="rename files recursively")
+parser.add_argument("-o", "--origin", type=str, action="store", default=" ",
+                    help="The origin char to find. A space by default")
+parser.add_argument("-d", "--dest", type=str, action="store", default="_",
+                    help="The dest char to susbtitute. An underscore by default")
+
+args = parser.parse_args()
+verbose = args.verbose
+recursive = args.recursive
+origin = args.origin
+dest = args.dest
+target = os.path.abspath(args.target)
+
+
+def renamer(filename):
+    old = filename
+    try:
+        os.rename(filename, filename.replace(origin, dest))
+        if verbose and not os.path.exists(old):
+            print("%s renamed" % old)
+    except Exception as e:
+        print("ERROR: ", e)
+        exit(1)
+
+
+if __name__ == "__main__":
+    if not os.path.exists(target):
+        print("ERROR, argument must be a valid file or directory")
+        exit(1)
+    else:
+        rename(target)
+    if recursive:
+        if os.path.isdir(target):
+            os.chdir(target)
+            for root, dirs, files in os.walk(target, topdown=False):
+                os.chdir(root)
+                for file in files:
+                    renamer(file)
+                for dir in dirs:
+                    renamer(dir)
+        else:
+            print("ERROR, you must define a valid directory with 'recursive' option")
+            exit(1)
