@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-import os, argparse
+import os, argparse, sys
 
 
 parser = argparse.ArgumentParser(description="Replace a space or another char in \
 directories and files by underscore or another char")
-parser.add_argument("target", type=str,
+parser.add_argument("target", type=str, nargs='+',
                     help="file or directory to rename")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="print every file or directories renamed")
@@ -21,7 +21,21 @@ verbose = args.verbose
 recursive = args.recursive
 origin = args.origin
 dest = args.dest
-target = os.path.abspath(args.target)
+targets = [ os.path.abspath(n) for n in args.target ]
+
+
+def recursiver(target):
+    if os.path.isdir(target):
+        os.chdir(target)
+        for root, dirs, files in os.walk(target, topdown=False):
+            os.chdir(root)
+            for file in files:
+                renamer(file)
+            for dir in dirs:
+                renamer(dir)
+    else:
+        print("ERROR, you must define a valid directory with 'recursive' option")
+        exit(1)
 
 
 def renamer(filename):
@@ -36,20 +50,11 @@ def renamer(filename):
 
 
 if __name__ == "__main__":
-    if not os.path.exists(target):
-        print("ERROR, argument must be a valid file or directory")
-        exit(1)
-    else:
-        rename(target)
-    if recursive:
-        if os.path.isdir(target):
-            os.chdir(target)
-            for root, dirs, files in os.walk(target, topdown=False):
-                os.chdir(root)
-                for file in files:
-                    renamer(file)
-                for dir in dirs:
-                    renamer(dir)
+    for target in targets:
+        if not os.path.exists(target):
+            print("ERROR, %s argument must be a valid file or directory" % target)
+            sys.exit(1)
         else:
-            print("ERROR, you must define a valid directory with 'recursive' option")
-            exit(1)
+            renamer(target)
+        if recursive:
+            recursiver(target)
