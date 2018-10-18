@@ -1,9 +1,15 @@
 # pynormalizer
-Replace a space or another char in directories and files by underscore or
-another char
+Normalize filenames replacing conflictive characters
+
+## Install
+```sh
+sudo pip3 install https://github.com/alex-left/pynormalizer/archive/v0.2.tar.gz
+```
+
+## Usage
 
 ```
-usage: pynormalizer [-h] [-v] [-r] [-o ORIGIN] [-d DEST] target
+usage: pynormalizer [-h] [-v] [-r] [-o ORIGIN] [-d DEST] target [target ...]
 
 positional arguments:
   target                file or directory to rename
@@ -13,6 +19,7 @@ optional arguments:
   -v, --verbose         print every file or directories renamed
   -r, --recursive       rename files recursively
   -o ORIGIN, --origin ORIGIN
-                        The origin char to find. A space by default
-  -d DEST, --dest DEST  The dest char to susbtitute. An underscore by default
+                        The origin char to find. Common undesiderable chars by
+                        default
+  -d DEST, --dest DEST  The destination char to susbtitute. An underscore by default
 ```
