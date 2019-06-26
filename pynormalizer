@@ -29,7 +29,8 @@ parser.add_argument("-v", "--verbose", action="store_true",
 parser.add_argument("-r", "--recursive", action="store_true",
                     help="rename files recursively")
 parser.add_argument("-o", "--origin", type=str, action="store",
-                    help="The origin char to find. Common undesiderable chars by default")
+                    help='''The origin char to substitute. Common undesiderable chars by default, 
+                    i.e all characters other than numbers, letters, hyphens, dots and commas''')
 parser.add_argument("-d", "--dest", type=str, action="store", default="_",
                     help="The dest char to susbtitute. An underscore by default")
 
@@ -39,7 +40,7 @@ recursive = args.recursive
 origin = args.origin
 dest = args.dest
 targets = args.target
-default_regex = r'-?[^\d\w\-._,]'
+default_regex = r'^(-+)?[^\d\w\-._,]'
 
 
 def recursiver(path):
