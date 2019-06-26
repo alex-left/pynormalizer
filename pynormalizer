@@ -52,6 +52,7 @@ def recursiver(path):
                 renamer(Path(file))
             for dir in dirs:
                 renamer(Path(dir))
+        renamer(path)
     else:
         print("ERROR, you must define a valid directory with 'recursive' option")
         raise SystemExit(1)
