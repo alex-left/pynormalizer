@@ -29,10 +29,12 @@ parser.add_argument("-v", "--verbose", action="store_true",
 parser.add_argument("-r", "--recursive", action="store_true",
                     help="rename files recursively")
 parser.add_argument("-o", "--origin", type=str, action="store",
-                    help='''The origin char to substitute. Common undesiderable chars by default, 
+                    help='''The origin character to substitute. Common undesiderable characters by default, 
                     i.e all characters other than numbers, letters, hyphens, dots and commas''')
 parser.add_argument("-d", "--dest", type=str, action="store", default="_",
-                    help="The dest char to susbtitute. An underscore by default")
+                    help="The dest characters to susbtitute. An underscore by default")
+parser.add_argument("--allow-duplicate", action="store_true", default=False,
+                    help="Allow repetitions of the dest characters, by default only one is allowed")
 
 args = parser.parse_args()
 verbose = args.verbose
@@ -40,8 +42,11 @@ recursive = args.recursive
 origin = args.origin
 dest = args.dest
 targets = args.target
+duplicate = args.allow_duplicate
+duplicate_regex = r'({}){{2,}}'.format(dest)
 default_regex = r'^(-+)?[^\d\w\-._,]'
 
+def deduplicater(path):
 
 def recursiver(path):
     if path.is_dir():
@@ -65,6 +70,8 @@ def renamer(path):
             path.rename(str(path.with_name(re.sub(default_regex, dest, path.name, re.UNICODE))))
         else:
             path.rename(str(path.with_name(path.name.replace(origin, dest))))
+        if not duplicate:
+            path.rename(str(path.with_name(re.sub(duplicate_regex, dest, path.name, re.UNICODE))))
         if verbose and not path.exists():
             print("%s renamed" % str(path.absolute()))
     except Exception as e:
